@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home Page</title>
+    <style>
+      /* Write all necessery css here  */
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        text-decoration: none;
+      }
+      .nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background: #0082e6;
+        height: 80px;
+        width: 100%;
+      }
+      .nav h1 {
+        color: white;
+        font-size: 35px;
+        line-height: 80px;
+        font-weight: bold;
+      }
+      a {
+        color: white;
+        font-size: 17px;
+        text-transform: uppercase;
+        padding: 7px 13px;
+        border-radius: 3px;
+      }
+      a.active,
+      a:hover {
+        background: #1b9bff;
+        transition: 0.5s;
+      }
+      .selecttag {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        height: 65px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+      select {
+        padding: 10px;
+        width: 180px;
+      }
+      #product-container {
+        width: 100%;
+        /* height: 100vh; */
+        /* border: 1px solid red; */
+        padding: 10px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+
+      /* Containerr */
+      #main {
+        /* border: 1px solid red; */
+        box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+        padding: 20px;
+      }
+      #imgdiv {
+        width: 100%;
+        height: auto;
+      }
+      img {
+        width: 100%;
+        height: auto;
+      }
+      #cartDiv {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        border: 1px solid red;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="nav">
+      <h1>Masai E-Commerce</h1>
+      <a href="./index.html">Home</a>
+      <a href="./cart.html">Cart</a>
+    </div>
+    <!-- Use this Select Tag for Filtering the Products  -->
+    <select id="filter">
+      <option value="">Filter By Category</option>
+      <option value="Laptop">Laptop</option>
+      <option value="Mobile">Mobile</option>
+      <option value="Speakers">Speakers</option>
+    </select>
+    <div id="product-container">
+      <!-- Here Append All the Products  -->
+    </div>
+  </body>
+  <script>
+    // Write all necessery JS here
+
+    function GetProduct() {
+      let url =
+        "https://dbioz2ek0e.execute-api.ap-south-1.amazonaws.com/mockapi/get-tech-products";
+      fetch(url)
+        .then(function (res) {
+          return res.json();
+        })
+        .then(function (res) {
+          displayProduct(res);
+          // handleFilter(res);
+          // console.log("res=>", res);
+        })
+        .catch(function (err) {
+          console.log("My error =>", err);
+        });
+    }
+
+    GetProduct();
+
+    //filter
+
+    var DataItms = JSON.parse(localStorage.getItem("cart"));
+
+    function handleFilter(data) {
+      // let dataForFilter = data.data;
+      // console.log("====>", dataForFilter);
+      var selected = document.getElementById("filter").value;
+      console.log(selected);
+      // var filteredList = dataForFilter.filter(function (elem) {
+      //   return elem.category == selected;
+      // });
+      // console.log(filteredList);
+      // displayProduct(filteredList);
+      // console.log("=>", data);
+    }
+
+    function displayProduct(data) {
+      document.getElementById("product-container").innerHTML = null;
+      // console.log("=>", data);
+      let FinalData = data.data;
+      // console.log("=>", FinalData);
+      FinalData.map((e) => {
+        let main = document.createElement("div");
+        main.setAttribute("id", "main");
+
+        let imgDiv = document.createElement("div");
+        imgDiv.setAttribute("id", "imgdiv");
+
+        let img = document.createElement("img");
+        img.setAttribute("id", "img12");
+        img.src = e.img;
+
+        imgDiv.append(img);
+
+        let title = document.createElement("div");
+        title.setAttribute("id", "title");
+        title.innerText = e.brand;
+
+        let descrip = document.createElement("div");
+        descrip.innerText = e.details;
+
+        let price = document.createElement("div");
+        price.innerText = "₹" + " " + e.price;
+
+        let category = document.createElement("div");
+        category.innerText = e.category;
+
+        let cartDiv = document.createElement("div");
+        cartDiv.setAttribute("id", "cartdiv");
+        let cartBtn = document.createElement("button");
+        cartBtn.innerText = "Add To Cart";
+        cartBtn.addEventListener("click", function () {
+          AddtoCart(e);
+        });
+        cartDiv.append(cartBtn);
+
+        main.append(imgDiv, title, price, descrip, category, cartDiv);
+        document.getElementById("product-container").append(main);
+      });
+
+      // handleFilter(data);
+    }
+
+    let CartItem = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function AddtoCart(e) {
+      let localData = JSON.parse(localStorage.getItem("cart"));
+      // console.log("=>", e.id);
+      // console.log("localData=>", localData);
+      // if (localData.length != 0) {
+      //   // localData.map((elem) => {
+      //   //   if (e.id !== elem.id) {
+      //   //     alert("Product Added To Cart");
+      //   //     // console.log(CartItem.includes(e.id));
+      //   //     CartItem.push(e);
+      //   //     localStorage.setItem("cart", JSON.stringify(CartItem));
+      //   //   } else {
+      //   //     alert("Item already in your cart");
+      //   //     return;
+      //   //   }
+      //   // });
+      //   for (let i = 0; i < localData.length; i++) {
+      //     console.log(localData[i]);
+      //   }
+      // } else {
+      //   alert("Product Added To Cart");
+      //   // console.log(CartItem.includes(e.id));
+      //   CartItem.push(e);
+      //   localStorage.setItem("cart", JSON.stringify(CartItem));
+      // }
+      alert("Product Added To Cart");
+      // console.log(CartItem.includes(e.id));
+      CartItem.push(e);
+      localStorage.setItem("cart", JSON.stringify(CartItem));
+    }
+  </script>
+</html>
